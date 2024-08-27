@@ -46,6 +46,13 @@ sgd_cv.best_estimator_
 sgd_results = pd.DataFrame(sgd_cv.cv_results_)
 sgd_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.835001
 
+raw_test_feats["Survived"] = sgd_cv.best_estimator_.predict(test_feats)
+sgd_submission = raw_test_feats[["passengerid", "Survived"]].rename(
+    columns={"passengerid": "PassengerId"}
+)
+
+sgd_submission.to_csv("sgd_survival.csv", index=False)
+
 # KNN
 knn_clf = KNeighborsClassifier()
 
@@ -70,6 +77,15 @@ knn_cv.best_estimator_
 knn_results = pd.DataFrame(knn_cv.cv_results_)
 knn_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.827167
 
+
+raw_test_feats["Survived"] = knn_cv.best_estimator_.predict(test_feats)
+knn_submission = raw_test_feats[["passengerid", "Survived"]].rename(
+    columns={"passengerid": "PassengerId"}
+)
+
+knn_submission.to_csv("knn_survival.csv", index=False)
+
+
 # Random Forest
 rf_clf = RandomForestClassifier(random_state=42, n_jobs=8)
 
@@ -92,3 +108,10 @@ rf_cv.best_estimator_
 
 rf_results = pd.DataFrame(rf_cv.cv_results_)
 rf_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.823790
+
+raw_test_feats["Survived"] = rf_cv.best_estimator_.predict(test_feats)
+rf_submission = raw_test_feats[["passengerid", "Survived"]].rename(
+    columns={"passengerid": "PassengerId"}
+)
+
+rf_submission.to_csv("rf_survival.csv", index=False)
