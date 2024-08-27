@@ -20,8 +20,7 @@ raw_test_feats = titanic_test.drop(columns="name")
 
 train_label = titanic_train.survived
 
-train_feats = preprocess_feats(raw_train_feats)
-test_feats = preprocess_feats(raw_test_feats)
+train_feats, test_feats = preprocess_feats(raw_train_feats, raw_test_feats)
 
 # SGD
 sgd_clf = SGDClassifier(random_state=27, n_jobs=8)
@@ -45,7 +44,7 @@ sgd_cv.best_params_
 sgd_cv.best_estimator_
 
 sgd_results = pd.DataFrame(sgd_cv.cv_results_)
-sgd_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.836118
+sgd_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.835001
 
 # KNN
 knn_clf = KNeighborsClassifier()
@@ -69,7 +68,7 @@ knn_cv.best_params_
 knn_cv.best_estimator_
 
 knn_results = pd.DataFrame(knn_cv.cv_results_)
-knn_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.823803
+knn_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.827167
 
 # Random Forest
 rf_clf = RandomForestClassifier(random_state=42, n_jobs=8)
@@ -92,4 +91,4 @@ rf_cv.best_params_
 rf_cv.best_estimator_
 
 rf_results = pd.DataFrame(rf_cv.cv_results_)
-rf_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.820419
+rf_results.sort_values("mean_test_score", ascending=False)  # best_score = 0.823790

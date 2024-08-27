@@ -25,15 +25,18 @@ def load_titanic_data():
     ]
 
 
-def preprocess_feats(feats: pd.DataFrame):
-    feats = feats.set_index("passengerid")
+def preprocess_feats(train_feats: pd.DataFrame, test_feats: pd.DataFrame):
+    train_feats = train_feats.set_index("passengerid")
+    test_feats = test_feats.set_index("passengerid")
 
     def categorize_column(df, column="sex"):
         return pd.get_dummies(df[column], drop_first=True)
 
-    feats["sex"] = categorize_column(feats, "sex")
+    train_feats["sex"] = categorize_column(train_feats, "sex")
+    test_feats["sex"] = categorize_column(test_feats, "sex")
 
-    feats.loc[feats.cabin.isna(), "cabin"] = "no_cabin"
+    train_feats.loc[train_feats.cabin.isna(), "cabin"] = "no_cabin"
+    test_feats.loc[test_feats.cabin.isna(), "cabin"] = "no_cabin"
 
     oh_encoder = OneHotEncoder()
     cat_imputer = SimpleImputer(strategy="most_frequent")
@@ -43,8 +46,8 @@ def preprocess_feats(feats: pd.DataFrame):
     cat_pipeline = Pipeline([("oh", oh_encoder), ("imputer", cat_imputer)])
     num_pipeline = Pipeline([("imputer", num_imputer), ("scaler", scaler)])
 
-    categorical_columns = feats.select_dtypes(include=[object, bool]).columns
-    numerical_columns = feats.columns.difference(categorical_columns)
+    categorical_columns = train_feats.select_dtypes(include=[object, bool]).columns
+    numerical_columns = train_feats.columns.difference(categorical_columns)
 
     col_transformer = ColumnTransformer(
         [
@@ -53,6 +56,9 @@ def preprocess_feats(feats: pd.DataFrame):
         ]
     )
 
-    preprocessed_feats = col_transformer.fit_transform(feats)
+    col_transformer.fit(pd.concat([train_feats, test_feats]))
 
-    return preprocessed_feats
+    preprocessed_train_feats = col_transformer.transform(train_feats)
+    preprocessed_test_feats = col_transformer.transform(test_feats)
+
+    return preprocessed_train_feats, preprocessed_test_feats
