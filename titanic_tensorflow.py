@@ -48,7 +48,7 @@ model = model_learning_rate(0.008)
 
 t0 = time.time()
 n_epochs = 300
-history = model.fit(train_feats, train_label, epochs=n_epochs, validation_split=0.5)
+history = model.fit(train_feats, train_label, epochs=n_epochs, validation_split=0.15)
 t1 = time.time()
 
 prediction = model.predict(test_feats)
@@ -66,4 +66,4 @@ df = pd.concat(
 
 df["Survived"] = df["Survived"].apply(int)
 
-df.to_csv("survival.csv", index=False)
+df.to_csv("tensorflow_survival.csv", index=False)
